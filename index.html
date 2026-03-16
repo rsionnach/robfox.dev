@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rob Fox — SRE, Open Source, AI Reliability</title>
+    <meta name="description" content="Senior SRE building reliability tooling for AI agent systems. Creator of the OpenSRM ecosystem and contributor to GasTown.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #1A1D23;
+            --bg-raised: #22242C;
+            --bg-surface: #282A33;
+            --border: #2E3038;
+            --border-hover: #3E414A;
+
+            --text-primary: #F0F0F3;
+            --text-secondary: #9CA3AF;
+            --text-tertiary: #6B7280;
+            --text-ghost: #4B5060;
+
+            --accent: #34D399;
+            --accent-dim: #065F46;
+
+            --arbiter: #818CF8;
+            --verdict: #34D399;
+            --sitrep: #FBBF24;
+            --mayday: #F87171;
+            --nthlayer: #94A3B8;
+            --opensrm: #F0F0F3;
+
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', -apple-system, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text-secondary);
+            font-family: var(--sans);
+            line-height: 1.7;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+
+        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* Hero */
+        .hero { position: relative; min-height: 85vh; display: flex; align-items: center; overflow: hidden; }
+
+        .hero-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(52,211,153,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(52,211,153,0.035) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 70%);
+        }
+
+        .glow { position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        .status-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+        .status-text { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+
+        h1 { font-size: clamp(30px,4.5vw,48px); font-weight: 300; line-height: 1.3; color: var(--text-primary); margin-bottom: 24px; max-width: 680px; letter-spacing: -0.01em; }
+        h1 .hl { color: var(--accent); }
+
+        .hero-sub { font-size: 17px; color: var(--text-secondary); max-width: 540px; line-height: 1.8; margin-bottom: 40px; }
+        .hero-sub a { color: var(--text-primary); text-decoration: none; border-bottom: 1px solid var(--border-hover); transition: all 0.2s; }
+        .hero-sub a:hover { color: var(--accent); border-color: var(--accent); }
+
+        .pills { display: flex; gap: 10px; flex-wrap: wrap; }
+        .link-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; color: var(--text-secondary); text-decoration: none; font-size: 13px; font-family: var(--mono); transition: all 0.2s; }
+        .link-pill:hover { border-color: var(--accent); color: var(--accent); }
+
+        .divider { height: 1px; background: var(--border); margin: 80px 0; }
+
+        .section-label { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+        .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        /* Thesis */
+        .thesis { max-width: 620px; margin: 0 auto; text-align: center; padding: 60px 0 80px; }
+        .thesis .section-label { justify-content: center; }
+        .thesis .section-label::after { display: none; }
+        .thesis-statement { font-size: clamp(18px,2.2vw,22px); font-weight: 300; color: var(--text-primary); line-height: 1.7; margin-bottom: 16px; }
+
+        /* Flow */
+        .flow-bar { display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; }
+        .flow-step { text-align: center; min-width: 70px; }
+        .flow-dot-wrap { width: 10px; height: 10px; border-radius: 50%; margin: 0 auto 6px; position: relative; }
+        .flow-dot-ring { position: absolute; inset: -3px; border-radius: 50%; border: 1px solid; opacity: 0.3; }
+        .flow-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; }
+        .flow-connector { flex: 0 0 24px; display: flex; align-items: center; color: var(--text-ghost); font-size: 10px; padding-bottom: 16px; }
+
+        /* Eco cards */
+        .eco-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%,320px),1fr)); gap: 12px; }
+        .eco-card { background: var(--bg-raised); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; transition: all 0.25s; position: relative; overflow: hidden; text-decoration: none; color: inherit; display: block; }
+        .eco-card:hover { border-color: var(--border-hover); transform: translateY(-2px); background: var(--bg-surface); }
+        .eco-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .eco-card-name { font-size: 18px; font-weight: 500; color: var(--text-primary); letter-spacing: -0.01em; }
+        .tag { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+        .eco-card-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+        /* Articles */
+        .article-row { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--border); transition: all 0.2s; text-decoration: none; color: inherit; }
+        .article-row:hover { padding-left: 8px; }
+        .article-row:hover .article-title { color: var(--accent); }
+        .article-title { color: var(--text-primary); font-weight: 400; font-size: 16px; transition: color 0.2s; }
+        .article-meta { font-family: var(--mono); font-size: 11px; color: var(--text-tertiary); white-space: nowrap; margin-left: 24px; letter-spacing: 0.03em; }
+
+        /* GasTown */
+        .pr-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+        .pr-link { color: var(--text-primary); text-decoration: none; font-size: 16px; transition: color 0.2s; }
+        .pr-link:hover { color: var(--accent); }
+        .pr-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 12px; font-family: var(--mono); font-size: 11px; font-weight: 500; background: rgba(52,211,153,0.1); color: var(--accent); }
+        .pr-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+        /* Advisory */
+        .advisory-box { border: 1px solid var(--border); border-radius: 10px; padding: 32px; background: var(--bg-raised); position: relative; }
+        .advisory-box::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--accent); border-radius: 10px 0 0 10px; }
+
+        /* Footer */
+        footer { border-top: 1px solid var(--border); padding: 32px 0 48px; }
+        .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .footer-link { color: var(--text-ghost); text-decoration: none; font-size: 12px; font-family: var(--mono); transition: color 0.2s; }
+        .footer-link:hover { color: var(--accent); }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 20px; }
+            .eco-grid { grid-template-columns: 1fr; }
+            .flow-connector { flex: 0 0 12px; }
+            .article-row { flex-direction: column; gap: 4px; }
+            .article-meta { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <div class="hero-grid"></div>
+        <div class="glow" style="width:500px;height:500px;background:rgba(52,211,153,0.06);top:-15%;right:10%"></div>
+        <div class="glow" style="width:350px;height:350px;background:rgba(129,140,248,0.04);bottom:5%;left:5%;animation-delay:3s"></div>
+        <div class="container" style="position:relative;z-index:1;padding:140px 32px 80px">
+            <div class="status-bar fade-in">
+                <div class="status-dot"></div>
+                <span class="status-text">Rob Fox &middot; Senior SRE</span>
+            </div>
+            <h1 class="fade-in" style="transition-delay:100ms">Reliability tooling for the age of <span class="hl">AI agents</span></h1>
+            <p class="hero-sub fade-in" style="transition-delay:200ms">
+                Open source maintainer building the OpenSRM ecosystem.
+                Active <a href="https://github.com/steveyegge/gastown">GasTown</a> contributor. Based in Dublin.
+            </p>
+            <div class="pills fade-in" style="transition-delay:300ms">
+                <a href="https://github.com/rsionnach" class="link-pill">GitHub &#8599;</a>
+                <a href="https://www.linkedin.com/in/rob-fox-29a29024/" class="link-pill">LinkedIn &#8599;</a>
+                <a href="mailto:rob@robfox.dev" class="link-pill">Email &#8599;</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container"><div class="divider"></div></div>
+
+    <section class="container">
+        <div class="thesis fade-in">
+            <p class="section-label"><span>Thesis</span></p>
+            <p class="thesis-statement">
+                A code review bot with 99.9% availability can approve terrible code
+                dozens of times a day. <span style="color:var(--accent)">Nobody&rsquo;s tracking that.</span>
+            </p>
+            <p style="font-size:15px;color:var(--text-secondary);line-height:1.8">
+                Traditional SRE gave us SLOs for latency and availability.
+                AI agents need SLOs for judgment quality.
+                I&rsquo;m building the tooling that connects these two worlds.
+            </p>
+        </div>
+    </section>
+
+    <section class="container" style="padding-bottom:20px">
+        <div class="flow-bar fade-in" id="flow-bar"></div>
+    </section>
+
+    <section class="container" style="padding-top:60px;padding-bottom:80px">
+        <div class="fade-in">
+            <p class="section-label"><span>The ecosystem</span></p>
+            <p style="font-size:16px;color:var(--text-secondary);margin-bottom:36px;max-width:500px">
+                Six independent components. Each solves a complete problem alone.
+                Together they form a reliability lifecycle for AI systems.
+            </p>
+        </div>
+        <div class="eco-grid" id="eco-grid"></div>
+    </section>
+
+    <div class="container"><div class="divider" style="margin-top:0"></div></div>
+
+    <section class="container fade-in" style="padding-top:60px;padding-bottom:80px">
+        <p class="section-label"><span>Writing</span></p>
+        <div id="articles"></div>
+    </section>
+
+    <section class="container fade-in" style="padding-bottom:80px">
+        <p class="section-label"><span>GasTown contributions</span></p>
+
+        <div style="margin-bottom:24px">
+            <div class="pr-header">
+                <a href="https://github.com/steveyegge/gastown/pull/2263" class="pr-link">Guardian quality review plugin</a>
+                <span class="pr-badge">&#10003; merged</span>
+            </div>
+            <p class="pr-desc">Deacon plugin for the merge pipeline. Scores per-worker output quality, tracks trends, alerts on degradation. Merged by Steve Yegge. The Arbiter&rsquo;s origin story.</p>
+        </div>
+
+        <div style="height:1px;background:var(--border);margin:24px 0"></div>
+
+        <div>
+            <div class="pr-header">
+                <a href="https://github.com/steveyegge/gastown/pull/1583" class="pr-link">Feed problems view refactor</a>
+                <span class="pr-badge">&#10003; merged</span>
+            </div>
+            <p class="pr-desc">Replaced tmux scraping with structured beads-based health detection. Merged via dual-model review.</p>
+        </div>
+    </section>
+
+    <div class="container"><div class="divider" style="margin-top:0"></div></div>
+
+    <section class="container fade-in" style="padding-top:60px;padding-bottom:80px">
+        <p class="section-label"><span>Advisory</span></p>
+        <div class="advisory-box">
+            <p style="font-size:17px;color:var(--text-primary);line-height:1.7;font-weight:300;margin-bottom:14px">
+                I help teams measure and govern AI agent decision quality.
+            </p>
+            <p style="font-size:15px;color:var(--text-secondary);line-height:1.8;margin-bottom:8px">
+                If you&rsquo;re running AI agents in production and asking
+                <em style="color:var(--accent);font-style:italic">how do we know they&rsquo;re making good decisions?</em>
+                &mdash; that&rsquo;s the problem I solve.
+            </p>
+            <p style="font-size:14px;color:var(--text-tertiary);line-height:1.7;margin-bottom:24px">
+                Fixed-scope engagements: manifests written, Arbiter configured,
+                judgment SLOs measured, first accuracy report produced.
+            </p>
+            <a href="mailto:rob@robfox.dev" class="link-pill" style="border-color:var(--accent);color:var(--accent)">Get in touch &#8599;</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-inner">
+            <span style="font-size:12px;color:var(--text-ghost);font-family:var(--mono)">&copy; 2026 Rob Fox</span>
+            <div style="display:flex;gap:20px">
+                <a href="https://github.com/rsionnach" class="footer-link">GitHub</a>
+                <a href="https://www.linkedin.com/in/rob-fox-29a29024/" class="footer-link">LinkedIn</a>
+                <a href="mailto:rob@robfox.dev" class="footer-link">Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll animation
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Flow bar
+        const FLOW = [
+            { label: 'Define', color: '#F0F0F3' },
+            { label: 'Generate', color: '#94A3B8' },
+            { label: 'Measure', color: '#818CF8' },
+            { label: 'Correlate', color: '#FBBF24' },
+            { label: 'Respond', color: '#F87171' },
+            { label: 'Learn', color: '#34D399' },
+        ];
+        const fb = document.getElementById('flow-bar');
+        FLOW.forEach((f, i) => {
+            const s = document.createElement('div');
+            s.className = 'flow-step';
+            s.innerHTML = '<div class="flow-dot-wrap" style="background:'+f.color+'"><div class="flow-dot-ring" style="border-color:'+f.color+'"></div></div><span class="flow-label" style="color:'+f.color+'">'+f.label+'</span>';
+            fb.appendChild(s);
+            if (i < FLOW.length - 1) {
+                const a = document.createElement('div');
+                a.className = 'flow-connector';
+                a.textContent = '\u2192';
+                fb.appendChild(a);
+            }
+        });
+
+        // Ecosystem
+        const ECO = [
+            { name: 'OpenSRM', desc: 'Specification for declaring service reliability requirements as code, including judgment SLOs for AI decision quality.', color: '#F0F0F3', tag: 'spec', tagBg: 'rgba(240,240,243,0.08)', tagColor: '#6B7280', url: 'https://github.com/rsionnach/opensrm' },
+            { name: 'Verdict', desc: 'The atomic unit of AI judgment. Records decisions, reasoning, and outcomes. Beads track work. Verdicts track whether AI decisions were correct.', color: '#34D399', tag: 'primitive', tagBg: 'rgba(52,211,153,0.08)', tagColor: '#34D399', url: 'https://github.com/rsionnach/verdicts' },
+            { name: 'Arbiter', desc: 'Quality measurement and governance for AI agents. Point it at your agents, it tells you which ones are reliable and which are silently degrading.', color: '#818CF8', tag: 'agent', tagBg: 'rgba(129,140,248,0.08)', tagColor: '#818CF8', url: 'https://github.com/rsionnach/arbiter' },
+            { name: 'NthLayer', desc: 'Generate your entire monitoring stack from a single manifest. Prometheus rules, Grafana dashboards, deploy gates, Monte Carlo SLO simulation.', color: '#94A3B8', tag: 'tool', tagBg: 'rgba(148,163,184,0.08)', tagColor: '#94A3B8', url: 'https://github.com/rsionnach/nthlayer' },
+            { name: 'SitRep', desc: 'Pre-correlates millions of observability signals continuously. When something breaks, the correlated picture is already built. Seconds, not minutes.', color: '#FBBF24', tag: 'agent', tagBg: 'rgba(251,191,36,0.08)', tagColor: '#FBBF24', url: 'https://github.com/rsionnach/sitrep' },
+            { name: 'Mayday', desc: 'AI-coordinated incident response. Specialised agents for triage, investigation, and remediation. Human supervision with pre-approved safe actions.', color: '#F87171', tag: 'agents', tagBg: 'rgba(248,113,113,0.08)', tagColor: '#F87171', url: 'https://github.com/rsionnach/mayday' },
+        ];
+        const eg = document.getElementById('eco-grid');
+        ECO.forEach((item, i) => {
+            const c = document.createElement('a');
+            c.href = item.url;
+            c.className = 'eco-card fade-in';
+            c.style.transitionDelay = (i * 60) + 'ms';
+            c.innerHTML = '<div class="eco-card-header"><span class="eco-card-name">'+item.name+'</span><span class="tag" style="background:'+item.tagBg+';color:'+item.tagColor+'">'+item.tag+'</span></div><p class="eco-card-desc">'+item.desc+'</p>';
+            eg.appendChild(c);
+            observer.observe(c);
+        });
+
+        // Articles
+        const ART = [
+            { title: 'Your AI Agent Is Available, Fast, and Making Terrible Decisions', meta: 'Judgment SLOs', url: 'https://dev.to/rsionnach/your-ai-agent-is-available-fast-and-making-terrible-decisions-54ac' },
+            { title: 'OpenSRM: An Open Specification for Service Reliability', meta: 'The specification', url: 'https://dev.to/rsionnach/opensrm-an-open-specification-for-service-reliability-44bi' },
+            { title: 'Shift-Left Reliability', meta: 'The foundation', url: 'https://dev.to/rsionnach/shift-left-reliability-4poo' },
+        ];
+        const ad = document.getElementById('articles');
+        ART.forEach(a => {
+            const r = document.createElement('a');
+            r.href = a.url;
+            r.className = 'article-row';
+            r.innerHTML = '<span class="article-title">'+a.title+'</span><span class="article-meta">'+a.meta+'</span>';
+            ad.appendChild(r);
+        });
+    </script>
+</body>
+</html>
